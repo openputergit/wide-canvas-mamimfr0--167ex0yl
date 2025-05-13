@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Companion App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-['Inter']">
+    <div class="max-w-md mx-auto min-h-screen bg-white shadow-lg">
+        <!-- Header -->
+        <header class="bg-blue-600 text-white p-4">
+            <h1 class="text-xl font-bold">College Companion</h1>
+        </header>
+
+        <!-- Main Navigation -->
+        <nav class="p-4 border-b">
+            <div class="flex justify-around">
+                <button onclick="showSection('papers')" class="flex flex-col items-center text-blue-600">
+                    <i class="bi bi-file-text text-2xl"></i>
+                    <span class="text-sm">Papers</span>
+                </button>
+                <button onclick="showSection('attendance')" class="flex flex-col items-center text-gray-600">
+                    <i class="bi bi-calendar-check text-2xl"></i>
+                    <span class="text-sm">Attendance</span>
+                </button>
+                <button onclick="showSection('request')" class="flex flex-col items-center text-gray-600">
+                    <i class="bi bi-upload text-2xl"></i>
+                    <span class="text-sm">Request</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Papers Section -->
+        <section id="papers" class="p-4">
+            <div class="space-y-4">
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Select Course</label>
+                        <select class="w-full border rounded p-2" id="courseSelect">
+                            <option value="">Select Course</option>
+                            <option value="BBA">BBA</option>
+                            <option value="BCA">BCA</option>
+                        </select>
+                    </div>
+                    
+                    <div id="semesterContainer" class="hidden">
+                        <label class="block text-sm font-medium mb-1">Select Semester</label>
+                        <select class="w-full border rounded p-2" id="semesterSelect">
+                            <option value="">Select Semester</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                        </select>
+                    </div>
+                    
+                    <div id="examTypeContainer" class="hidden">
+                        <label class="block text-sm font-medium mb-1">Select Exam Type</label>
+                        <select class="w-full border rounded p-2" id="examTypeSelect">
+                            <option value="">Select Exam Type</option>
+                            <option value="sessional1">Sessional 1</option>
+                            <option value="sessional2">Sessional 2</option>
+                            <option value="put">PUT Exam</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="papersList" class="space-y-3 mt-4">
+                    <!-- Papers will be loaded here -->
+                    <p id="noPapersMessage" class="text-gray-500 text-center hidden">Select options above to view available papers</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Attendance Section -->
+        <section id="attendance" class="p-4 hidden">
+            <div class="space-y-4">
+                <h2 class="text-lg font-semibold">Attendance Overview</h2>
+                <div class="space-y-3" id="attendanceList">
+                    <!-- Attendance data will be loaded here -->
+                    <div class="flex justify-center items-center py-4 text-gray-500" id="loadingAttendance">
+                        <div class="loading mr-2 border-gray-500 border-t-blue-500"></div>
+                        Loading attendance data...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Request Section -->
+        <section id="request" class="p-4 hidden">
+            <div class="space-y-4">
+                <h2 class="text-lg font-semibold">Request Paper Upload</h2>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-info-circle text-yellow-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                Get cash rewards for uploading verified question papers that are currently unavailable.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <form id="requestForm" class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium">Course</label>
+                        <select class="w-full border rounded p-2" required>
+                            <option value="">Select Course</option>
+                            <option value="BBA">BBA</option>
+                            <option value="BCA">BCA</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Subject</label>
+                        <input type="text" class="w-full border rounded p-2" required placeholder="Enter subject name">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Exam Type</label>
+                        <select class="w-full border rounded p-2" required>
+                            <option value="">Select Exam Type</option>
+                            <option value="sessional1">Sessional 1</option>
+                            <option value="sessional2">Sessional 2</option>
+                            <option value="put">PUT Exam</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Year</label>
+                        <input type="text" class="w-full border rounded p-2" required placeholder="e.g. 2023">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Semester</label>
+                        <select class="w-full border rounded p-2" required>
+                            <option value="">Select Semester</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Paper File (PDF only)</label>
+                        <input type="file" class="w-full border rounded p-2" accept=".pdf" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Your Contact Information</label>
+                        <input type="text" class="w-full border rounded p-2" required placeholder="Email or Phone Number">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white rounded py-2 flex justify-center items-center">
+                        <span>Submit Request</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Sample data - In production, this would come from an API
+        const allPapers = {
+            "BBA": {
+                "1": {
+                    "sessional1": [
+                        { subject: "Introduction to Management", year: "2022", solution: true },
+                        { subject: "Business Communication", year: "2022", solution: true },
+                        { subject: "Business Mathematics", year: "2022", solution: false }
+                    ],
+                    "sessional2": [
+                        { subject: "Introduction to Management", year: "2022", solution: true },
+                        { subject: "Business Communication", year: "2022", solution: false }
+                    ],
+                    "put": [
+                        { subject: "Introduction to Management", year: "2022", solution: true },
+                        { subject: "Business Communication", year: "2022", solution: true },
+                        { subject: "Business Mathematics", year: "2022", solution: true },
+                        { subject: "Financial Accounting", year: "2022", solution: false }
+                    ]
+                },
+                "2": {
+                    "sessional1": [
+                        { subject: "Organizational Behavior", year: "2022", solution: true },
+                        { subject: "Business Economics", year: "2022", solution: false }
+                    ]
+                }
+            },
+            "BCA": {
+                "1": {
+                    "sessional1": [
+                        { subject: "Introduction to Programming", year: "2022", solution: true },
+                        { subject: "Computer Fundamentals", year: "2022", solution: true },
+                        { subject: "Mathematics I", year: "2022", solution: false }
+                    ],
+                    "sessional2": [
+                        { subject: "Introduction to Programming", year: "2022", solution: true },
+                        { subject: "Computer Fundamentals", year: "2022", solution: false }
+                    ],
+                    "put": [
+                        { subject: "Introduction to Programming", year: "2022", solution: true },
+                        { subject: "Computer Fundamentals", year: "2022", solution: true },
+                        { subject: "Mathematics I", year: "2022", solution: true },
+                        { subject: "Digital Electronics", year: "2022", solution: false }
+                    ]
+                },
+                "2": {
+                    "sessional1": [
+                        { subject: "Data Structures", year: "2022", solution: true },
+                        { subject: "Database Management Systems", year: "2022", solution: false }
+                    ]
+                }
+            }
+        };
+
+        const attendance = {
+            "BBA": [
+                { subject: "Business Ethics", total: 45, attended: 40 },
+                { subject: "Marketing Management", total: 42, attended: 38 },
+                { subject: "Financial Management", total: 40, attended: 28 }
+            ],
+            "BCA": [
+                { subject: "Web Development", total: 50, attended: 45 },
+                { subject: "Java Programming", total: 48, attended: 44 },
+                { subject: "Computer Networks", total: 40, attended: 30 },
+                { subject: "Software Engineering", total: 36, attended: 25 }
+            ]
+        };
+
+        // Global variables to track user selections
+        let selectedCourse = "";
+        let selectedSemester = "";
+        let selectedExamType = "";
+
+        // Show selected section and update nav buttons
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update nav button colors
+            document.querySelectorAll('nav button').forEach(button => {
+                button.classList.remove('text-blue-600');
+                button.classList.add('text-gray-600');
+            });
+            
+            // Highlight the selected button
+            event.currentTarget.classList.remove('text-gray-600');
+            event.currentTarget.classList.add('text-blue-600');
+            
+            // Load attendance data if that section is selected
+            if (sectionId === 'attendance') {
+                loadAttendanceData();
+            }
+        }
+
+        // Course selection handler
+        document.getElementById('courseSelect').addEventListener('change', function() {
+            selectedCourse = this.value;
+            selectedSemester = "";
+            selectedExamType = "";
+            
+            const semesterContainer = document.getElementById('semesterContainer');
+            const examTypeContainer = document.getElementById('examTypeContainer');
+            const semesterSelect = document.getElementById('semesterSelect');
+            const examTypeSelect = document.getElementById('examTypeSelect');
+            
+            // Reset semester and exam type selections
+            semesterSelect.value = "";
+            examTypeSelect.value = "";
+            
+            // Show/hide containers based on selection
+            if (selectedCourse) {
+                semesterContainer.classList.remove('hidden');
+                examTypeContainer.classList.add('hidden');
+            } else {
+                semesterContainer.classList.add('hidden');
+                examTypeContainer.classList.add('hidden');
+            }
+            
+            // Clear papers list
+            clearPapersList();
+        });
+
+        // Semester selection handler
+        document.getElementById('semesterSelect').addEventListener('change', function() {
+            selectedSemester = this.value;
+            selectedExamType = "";
+            
+            const examTypeContainer = document.getElementById('examTypeContainer');
+            const examTypeSelect = document.getElementById('examTypeSelect');
+            
+            // Reset exam type selection
+            examTypeSelect.value = "";
+            
+            // Show/hide exam type container based on selection
+            if (selectedSemester) {
+                examTypeContainer.classList.remove('hidden');
+            } else {
+                examTypeContainer.classList.add('hidden');
+            }
+            
+            // Clear papers list
+            clearPapersList();
+        });
+
+        // Exam type selection handler
+        document.getElementById('examTypeSelect').addEventListener('change', function() {
+            selectedExamType = this.value;
+            
+            // Load papers if all selections are made
+            if (selectedCourse && selectedSemester && selectedExamType) {
+                loadPapers();
+            } else {
+                clearPapersList();
+            }
+        });
+
+        // Clear papers list and show message
+        function clearPapersList() {
+            const papersList = document.getElementById('papersList');
+            const noPapersMessage = document.getElementById('noPapersMessage');
+            
+            papersList.innerHTML = '';
+            papersList.appendChild(noPapersMessage);
+            noPapersMessage.classList.remove('hidden');
+        }
+
+        // Load papers based on selections
+        function loadPapers() {
+            const papersList = document.getElementById('papersList');
+            const noPapersMessage = document.getElementById('noPapersMessage');
+            
+            papersList.innerHTML = '';
+            
+            // Show loading state
+            const loadingElement = document.createElement('div');
+            loadingElement.className = 'flex justify-center items-center py-4 text-gray-500';
+            loadingElement.innerHTML = `
+                <div class="loading mr-2 border-gray-500 border-t-blue-500"></div>
+                Loading papers...
+            `;
+            papersList.appendChild(loadingElement);
+            
+            // Simulate network request
+            setTimeout(() => {
+                papersList.innerHTML = '';
+                
+                // Check if papers exist for the selection
+                if (allPapers[selectedCourse] && 
+                    allPapers[selectedCourse][selectedSemester] && 
+                    allPapers[selectedCourse][selectedSemester][selectedExamType]) {
+                    
+                    const papers = allPapers[selectedCourse][selectedSemester][selectedExamType];
+                    
+                    if (papers.length > 0) {
+                        // Create elements for each paper
+                        papers.forEach(paper => {
+                            const paperElement = document.createElement('div');
+                            paperElement.className = 'flex justify-between items-center p-3 bg-gray-50 rounded shadow-sm';
+                            paperElement.innerHTML = `
+                                <div>
+                                    <h3 class="font-medium">${paper.subject}</h3>
+                                    <p class="text-sm text-gray-600">${paper.year}</p>
+                                </div>
+                                <div class="space-x-2">
+                                    <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition">Download</button>
+                                    ${paper.solution ? '<button class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition">Solution</button>' : ''}
+                                </div>
+                            `;
+                            papersList.appendChild(paperElement);
+                        });
+                    } else {
+                        showNoPapersMessage();
+                    }
+                } else {
+                    showNoPapersMessage();
+                }
+            }, 800); // Simulate loading time
+        }
+
+        // Show no papers message
+        function showNoPapersMessage() {
+            const papersList = document.getElementById('papersList');
+            papersList.innerHTML = `
+                <div class="text-center py-8">
+                    <i class="bi bi-file-earmark-x text-gray-400 text-4xl"></i>
+                    <p class="text-gray-500 mt-2">No papers available for this selection.</p>
+                    <button onclick="showSection('request')" class="mt-3 text-blue-600 underline">
+                        Request this paper
+                    </button>
+                </div>
+            `;
+        }
+
+        // Load attendance data
+        function loadAttendanceData() {
+            const attendanceList = document.getElementById('attendanceList');
+            const loadingAttendance = document.getElementById('loadingAttendance');
+            
+            // Make sure loading indicator is the only child
+            attendanceList.innerHTML = '';
+            attendanceList.appendChild(loadingAttendance);
+            
+            // Simulate network request
+            setTimeout(() => {
+                attendanceList.innerHTML = '';
+                
+                // For demo purposes, just show a course selection if no data yet
+                const attendanceSelection = document.createElement('div');
+                attendanceSelection.className = 'mb-4';
+                attendanceSelection.innerHTML = `
+                    <label class="block text-sm font-medium mb-1">Select Course for Attendance</label>
+                    <select class="w-full border rounded p-2" id="attendanceCourseSelect">
+                        <option value="">Select Course</option>
+                        <option value="BBA">BBA</option>
+                        <option value="BCA">BCA</option>
+                    </select>
+                `;
+                attendanceList.appendChild(attendanceSelection);
+                
+                // Show attendance stats for the demo
+                // We'll show BCA data by default
+                showAttendanceForCourse('BCA');
+                
+                // Add event listener to the newly created select
+                document.getElementById('attendanceCourseSelect').addEventListener('change', function() {
+                    if (this.value) {
+                        showAttendanceForCourse(this.value);
+                    } else {
+                        attendanceList.querySelectorAll('.attendance-item').forEach(item => {
+                            item.remove();
+                        });
+                    }
+                });
+                
+            }, 800); // Simulate loading time
+        }
+
+        // Display attendance for selected course
+        function showAttendanceForCourse(course) {
+            const attendanceList = document.getElementById('attendanceList');
+            
+            // Remove any existing attendance items
+            attendanceList.querySelectorAll('.attendance-item').forEach(item => {
+                item.remove();
+            });
+            
+            // Add attendance data
+            if (attendance[course]) {
+                attendance[course].forEach(subject => {
+                    const percentage = (subject.attended / subject.total * 100).toFixed(1);
+                    const attendanceElement = document.createElement('div');
+                    attendanceElement.className = 'p-3 bg-gray-50 rounded shadow-sm attendance-item';
+                    
+                    let statusClass = 'text-green-600';
+                    let statusBgClass = 'bg-green-600';
+                    if (percentage < 75) {
+                        statusClass = 'text-red-600';
+                        statusBgClass = 'bg-red-600';
+                    }
+                    
+                    attendanceElement.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-medium">${subject.subject}</h3>
+                            <span class="text-sm ${statusClass} font-semibold">${percentage}%</span>
+                        </div>
+                        <div class="mt-2 bg-gray-200 rounded-full h-2">
+                            <div class="${statusBgClass} rounded-full h-2" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="flex justify-between mt-1">
+                            <p class="text-sm text-gray-600">Classes: ${subject.attended}/${subject.total}</p>
+                            ${percentage < 75 ? '<span class="text-xs text-red-600">Low attendance warning</span>' : ''}
+                        </div>
+                    `;
+                    attendanceList.appendChild(attendanceElement);
+                });
+            }
+        }
+
+        // Handle paper request form
+        document.getElementById('requestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading state on button
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.innerHTML;
+            submitButton.innerHTML = '<div class="loading"></div>';
+            submitButton.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Reset button state
+                submitButton.innerHTML = originalButtonText;
+                submitButton.disabled = false;
+                
+                // Show success message
+                const form = this;
+                const successMessage = document.createElement('div');
+                successMessage.className = 'bg-green-50 border-l-4 border-green-400 p-4 mb-4';
+                successMessage.innerHTML = `
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-check-circle text-green-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700">
+                                Request submitted successfully! After verification, you will receive your cash reward.
+                            </p>
+                        </div>
+                    </div>
+                `;
+                
+                form.parentNode.insertBefore(successMessage, form);
+                form.reset();
+                
+                // Remove success message after 5 seconds
+                setTimeout(() => {
+                    successMessage.remove();
+                }, 5000);
+                
+            }, 1500);
+        });
+
+        // Show papers section by default
+        document.getElementById('noPapersMessage').classList.remove('hidden');
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
